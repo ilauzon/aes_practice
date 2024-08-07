@@ -66,14 +66,13 @@ __uint32_t gcd(__uint32_t a, __uint32_t b) {
 
 
 /**
- * Finds the multiplicative inverse of a bit pattern num in the finite field
- * GF(2^32) modulo the bit pattern mod.
+ * Finds the multiplicative inverse of a bit pattern `num` in the finite field
+ * GF(2^32) modulo the AES bit pattern.
  * 
  * This is implemented using the Extended Euclid's Algorithm.
  * @param num the starting bit pattern.
- * @param mod the divisor bit pattern. In the case of AES, this is 100011011.
  * @return the multiplicative inverse of num as specified.
  **/
-__uint32_t multiplicative_inverse(__uint32_t num, __uint32_t mod) {
+__uint32_t multiplicative_inverse(__uint32_t num) {
 	
 }
