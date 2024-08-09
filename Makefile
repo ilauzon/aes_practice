@@ -1,7 +1,7 @@
 CC=clang
 CFLAGS=
 DEPS= printbits.h aes.h
-OBJ= aes.c multiply.c printbits.c main.c
+OBJ= multiply.c printbits.c main.c
 APPNAME=app
 
 # %.o: %.c $(DEPS)
