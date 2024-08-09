@@ -76,6 +76,10 @@ typedef struct {
     i64 a, b, q, r, s1, s2, s3, t1, t2, t3;
 } eea_array;
 
+typedef struct {
+    i64 s, t;
+} eea_result;
+
 eea_array* eea_init(i64 a, i64 b) {
     eea_array* obj = malloc(sizeof *obj);
     if (!obj) {
@@ -122,14 +126,16 @@ void eea_next(eea_array* arr) {
 }
 
 /*
-Finds the multiplicative inverse of a bit pattern `num` in the finite field
-GF(2^32) modulo the AES bit pattern. This is implemented using the Extended
-Euclid's Algorithm.
+Finds the coefficients resulting from the Extended Euclidean Algorithm for
+finding the greatest common denominator of two numbers.
 
-Input: the starting bit pattern.
-Output: the modular multiplicative inverse of the bit pattern.
+Input: the two numbers a and b of the equation below.
+Output: a pointer to three 64-bit integers, with `[0]` being the
+coefficient `s`, `[1]` being the coefficient `t`, and `[2]` being the gcd in the equation:
+
+`s * a + t * b = gcd(a, b)`
 */
-i64 eea_MI(i64 a, i64 b) {
+i64* eea_full(i64 a, i64 b) {
     eea_array* array = eea_init(a, b);
 
     // when b, the divisor, is zero, we are done.
@@ -146,10 +152,31 @@ i64 eea_MI(i64 a, i64 b) {
     */
     i64 lhs = array->s1 * a + array->t1 * b;
     i64 rhs = array->a;
+    printf("a = %ld\nb = %ld\ns = %ld\nt = %ld\ngcd = %ld\n", a, b, array->s1, array->t1, array->a);
     if (labs(lhs) == rhs) {
-        printf("EEA success\n");
+        i64* result = malloc(3 * sizeof *result);
+        result[0] = array->s1;
+        result[1] = array->t1;
+        result[2] = array->a;
+        free(array);
+        return result;
     } else {
-        printf("EEA error\n");
+        perror("error calculating EEA.\n");
         printf("a = %ld\nb = %ld\ns = %ld\nt = %ld\ngcd = %ld\n", a, b, array->s1, array->t1, array->a);
+        free(array);
+        return NULL;
     }
+}
+
+/*
+Finds the multiplicative inverse of a bit pattern `num` in the finite field
+GF(2^32) modulo `n`. This is implemented using the Extended Euclidean Algorithm.
+
+Input: the starting bit pattern.
+Output: the modular multiplicative inverse of the bit pattern. Returns -1
+if it does not exist.
+*/
+i64 modular_MI(i64 num, i64 n) {
+    i64* result = eea_full(n, num);
+    return mod(result[1], n);
 }
